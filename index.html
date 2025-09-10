@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Phone Location Tracker</title>
+    <title>Phone Live Location Tracker</title>
 </head>
 <body>
     <h1>Phone Live Location Tracker</h1>
@@ -12,20 +12,24 @@
             if (navigator.geolocation) {
                 navigator.geolocation.watchPosition(
                     position => {
-                        fetch('http://49.37.220.87/update-location', {
+                        fetch('https://7f0066f98eeb.ngrok-free.app/update-location', {
                             method: 'POST',
                             headers: {'Content-Type': 'application/json'},
                             body: JSON.stringify({
                                 latitude: position.coords.latitude,
                                 longitude: position.coords.longitude
                             })
+                        }).then(response => {
+                            console.log('Location sent successfully');
+                        }).catch(err => {
+                            console.error('Failed to send location:', err);
                         });
                     },
-                    error => console.error('Error:', error),
+                    error => console.error('Error getting location:', error),
                     { enableHighAccuracy: true }
                 );
             } else {
-                alert('Geolocation not supported.');
+                alert('Geolocation is not supported by this browser.');
             }
         }
     </script>
