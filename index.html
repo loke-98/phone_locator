@@ -1,14 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Phone Live Location Tracker</title>
+    <title>Phone Location Tracker</title>
 </head>
 <body>
-    <h1>Phone Live Location Tracker</h1>
+    <h1>Phone Location Tracker</h1>
+
+    Name: <input type="text" id="name" placeholder="Enter your name" /><br><br>
+    Phone Number: <input type="text" id="phoneNumber" placeholder="Enter phone number" /><br><br>
     <button onclick="startTracking()">Start Tracking</button>
 
     <script>
         function startTracking() {
+            const name = document.getElementById('name').value;
+            const phoneNumber = document.getElementById('phoneNumber').value;
+
+            if (!name || !phoneNumber) {
+                alert('Please enter both name and phone number.');
+                return;
+            }
+
             if (navigator.geolocation) {
                 navigator.geolocation.watchPosition(
                     position => {
@@ -16,20 +27,18 @@
                             method: 'POST',
                             headers: {'Content-Type': 'application/json'},
                             body: JSON.stringify({
+                                name: name,
+                                phone_number: phoneNumber,
                                 latitude: position.coords.latitude,
                                 longitude: position.coords.longitude
                             })
-                        }).then(response => {
-                            console.log('Location sent successfully');
-                        }).catch(err => {
-                            console.error('Failed to send location:', err);
                         });
                     },
                     error => console.error('Error getting location:', error),
                     { enableHighAccuracy: true }
                 );
             } else {
-                alert('Geolocation is not supported by this browser.');
+                alert('Geolocation not supported.');
             }
         }
     </script>
