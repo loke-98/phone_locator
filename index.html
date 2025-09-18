@@ -1,46 +1,51 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Phone Location Tracker</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Location Updater</title>
 </head>
 <body>
-    <h1>Phone Location Tracker</h1>
+  <h1>Location Updater</h1>
+  <button onclick="sendLocation()">Send My Location</button>
 
-    Name: <input type="text" id="name" placeholder="Enter your name" /><br><br>
-    Phone Number: <input type="text" id="phoneNumber" placeholder="Enter phone number" /><br><br>
-    <button onclick="startTracking()">Start Tracking</button>
+  <script>
+    // ✅ Using your current ngrok link
+    const API_URL = "https://6c5dfbcacef3.ngrok-free.app";
 
-    <script>
-        function startTracking() {
-            const name = document.getElementById('name').value;
-            const phoneNumber = document.getElementById('phoneNumber').value;
+    function sendLocation() {
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const data = {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude
+            };
 
-            if (!name || !phoneNumber) {
-                alert('Please enter both name and phone number.');
-                return;
-            }
-
-            if (navigator.geolocation) {
-                navigator.geolocation.watchPosition(
-                    position => {
-                        fetch('https://9aac8e14f65b.ngrok-free.app/update-location', {
-                            method: 'POST',
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({
-                                name: name,
-                                phone_number: phoneNumber,
-                                latitude: position.coords.latitude,
-                                longitude: position.coords.longitude
-                            })
-                        });
-                    },
-                    error => console.error('Error getting location:', error),
-                    { enableHighAccuracy: true }
-                );
-            } else {
-                alert('Geolocation not supported.');
-            }
-        }
-    </script>
+            fetch(`${API_URL}/update-location`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+              console.log("Server Response:", result);
+              alert("Location sent successfully!");
+            })
+            .catch(error => {
+              console.error("Error:", error);
+              alert("Error sending location.");
+            });
+          },
+          (error) => {
+            console.error("Geolocation error:", error);
+            alert("Unable to fetch location.");
+          }
+        );
+      } else {
+        alert("Geolocation is not supported by this browser.");
+      }
+    }
+  </script>
 </body>
 </html>
